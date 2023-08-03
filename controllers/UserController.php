@@ -16,6 +16,8 @@ use yii\web\Response;
 class UserController extends Controller
 {
 
+    public $user;
+
     public function beforeAction($action)
     {
         if ($action->id === 'login') {
@@ -150,40 +152,40 @@ class UserController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
-        // Assuming you are receiving the username and password from the request
-        $post = Yii::$app->request->post();
-        $username = Yii::$app->request->post('username');
-        $password = Yii::$app->request->post('password');
+        $data = Yii::$app->request->getRawBody();
+        $postData = json_decode($data, true);
+        $username = $postData['username'];
+        $password = $postData['password'];
 
         // Implement your login logic here (e.g., validating credentials)
 
-        if (empty($username) || empty($password)) {
-            return ['success' => false, 'message' => 'Username and password are required', 'post'=>$post];
+        // if (empty($username) || empty($password)) {
+        if (empty($postData)) {
+            return ['success' => false, 'message' => 'Username and password are required', 'postData' => $postData];
         }
 
-        
-
-
+        // $user = $this->isValidUser($username, $password);
         // For example, check if username and password match a valid user in your database
-        // if ($this->isValidUser($username, $password)) {
-        //     return ['success' => true, 'message' => 'Login successful'];
-        // } else {
-        //     return ['success' => false, 'message' => 'Invalid username or password'];
-        // }
-
-        return ['success' => true, 'message' => 'Login successful', 'post'=>$post];
+        if ($user = $this->isValidUser($username, $password)) {
+            return ['success' => true, 'message' => 'Login successful', 'user'=>$user];
+        } else {
+            return ['success' => false, 'message' => 'Invalid username or password'];
+        }
+ 
+        // return ['success' => true, 'message' => 'Login successful', 'postData' => $postData];
     }
+
 
     private function isValidUser($username, $password)
     {
         // Implement your own logic here to check if the user credentials are valid
         // You may validate against a database or any other data source
+        // $model = new User();
+        $user = User::findOne(['user_email'=>$username]);
+        if(Yii::$app->getSecurity()->validatePassword($password, $user->password)){
+            return $user;
+        }
 
-        // For simplicity, this example checks hardcoded credentials (Demo purposes only)
-        $validUsername = 'demo';
-        $validPassword = 'password';
-
-        return ($username === $validUsername && $password === $validPassword);
-    }
-    
+        return null;
+    } 
 }

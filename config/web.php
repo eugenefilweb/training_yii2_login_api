@@ -15,6 +15,7 @@ $config = [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'R4mBdGeedfjZ85JAvM4QXMabSMK42tTm',
+            // 'enableCsrfValidation' => false,
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -51,6 +52,17 @@ $config = [
             'rules' => [
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
                 'POST user/login' => 'user/login',
+            ],
+        ],
+        'corsFilter' => [
+            'class' => \yii\filters\Cors::class,
+            'cors' => [
+                'Origin' => ['*'], // Adjust this array to specify allowed domains
+                'Access-Control-Allow-Credentials' => true,
+                'Access-Control-Request-Method' => ['POST', 'GET', 'OPTIONS'],
+                'Access-Control-Allow-Headers' => ['*'], // Adjust this array to specify allowed headers
+                'Access-Control-Expose-Headers' => [],
+                'Access-Control-Max-Age' => 3600,
             ],
         ],
 

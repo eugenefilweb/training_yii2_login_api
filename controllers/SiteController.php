@@ -35,6 +35,9 @@ class SiteController extends Controller
                     'logout' => ['post'],
                 ],
             ],
+            'corsFilter' => [
+                'class' => \yii\filters\Cors::class,
+            ],
         ];
     }
 
